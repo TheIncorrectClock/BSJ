@@ -27,10 +27,13 @@ abstract class InvestmentStrategy {
     }
 
     private boolean isHundredPercent(List<Pair<InvestmentFundType, Double>> list) {
-        double s = list.stream().
+        return Math.abs(1.0 - divisionSum(list)) < 0.00001;
+    }
+
+    private Double divisionSum(List<Pair<InvestmentFundType, Double>> list) {
+        return list.stream().
                 map(Pair::getSecond).
                 reduce(0.0, (sum, val) -> sum + val);
-        return Math.abs(1.0 - s) < 0.00001;
     }
 
     Map<InvestmentFundType, Double> getInfo() {
