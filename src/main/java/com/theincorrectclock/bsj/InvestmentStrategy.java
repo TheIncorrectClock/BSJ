@@ -40,7 +40,36 @@ abstract class InvestmentStrategy {
         return Collections.unmodifiableMap(strategyDetails);
     }
 
-    Double getInfo(InvestmentFundType type) {
+    private Double getInfo(InvestmentFundType type) {
         return strategyDetails.get(type);
+    }
+
+    void invest(List<InvestmentFund> funds, double amount) {
+        Map<InvestmentFundType, Double> distribution = funds.stream().
+                map(InvestmentFund::getType).
+                distinct().
+                map(f -> Pair.pair(f, Math.floor(getInfo(f) * amount))).
+                collect(Collectors.toMap(
+                        Pair::getFirst,
+                        Pair::getSecond
+                ));
+
+
+
+        Map<InvestmentFundType, Long> fundTypes = funds.stream().
+                collect(Collectors.groupingBy(InvestmentFund::getType, Collectors.counting()));
+
+        Map<String, Double> investment = funds.stream().
+                map(f -> Pair.pair(f.getName(), Math.floor(distribution.get(f.getType()) / fundTypes.get(f.getType())))).
+                collect(Collectors.toMap(
+                        Pair::getFirst,
+                        Pair::getSecond
+                ));
+
+
+        double uninvestable = amount - investment.entrySet().stream().mapToDouble(Map.Entry::getValue).sum();
+
+        investment.forEach((k, v) -> System.out.println(k + ": " + v));
+        System.out.println("not invested: " + uninvestable);
     }
 }
