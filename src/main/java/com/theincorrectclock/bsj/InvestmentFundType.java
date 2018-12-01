@@ -1,6 +1,6 @@
 package com.theincorrectclock.bsj;
 
-public enum InvestmentFundType {
+enum InvestmentFundType {
     DOMESTIC,
     FOREIGN,
     FINANCIAL
