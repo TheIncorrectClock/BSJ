@@ -1,7 +1,5 @@
 package com.theincorrectclock.bsj;
 
-import java.util.Optional;
-
 public enum InvestmentStrategyType {
 
     SAFE(SafeStrategy.class),
@@ -9,16 +7,20 @@ public enum InvestmentStrategyType {
     AGGRESSIVE(AggressiveStrategy.class);
 
     InvestmentStrategyType(Class<?> cls) {
-        this.strategy = cls;
+        this.strategy = create(cls);
     }
 
-    private Class<?> strategy;
+    InvestmentStrategy get() {
+        return strategy;
+    }
 
-    Optional<InvestmentStrategy> get() {
+    private InvestmentStrategy strategy;
+
+    private InvestmentStrategy create(Class<?> cls) {
         try {
-            return Optional.of(strategy.asSubclass(InvestmentStrategy.class).newInstance());
+            return cls.asSubclass(InvestmentStrategy.class).newInstance();
         } catch(IllegalAccessException | InstantiationException e) {
-            return Optional.empty();
+            throw new RuntimeException();
         }
     }
 }

@@ -10,12 +10,24 @@ abstract class InvestmentStrategy {
     private Map<InvestmentFundType, Double> strategyDetails;
 
     InvestmentStrategy(List<Pair<InvestmentFundType, Double>> list) {
-        if(isHundredPercent(list)) {
-            strategyDetails = createStrategyDetails(list);
-        } else {
-            throw new RuntimeException();
-        }
+        strategyDetails = createStrategyDetails(list);
+    }
 
+    Map<InvestmentFundType, Double> getInfo() {
+        return Collections.unmodifiableMap(strategyDetails);
+    }
+
+    Map<InvestmentFund, Double> invest(List<InvestmentFund> funds, double amount) {
+        Map<InvestmentFund, Double> investment
+                = distributeBetweenFunds(
+                        funds,
+                        distributionByFundTypes(funds, amount),
+                        countFundsByTypes(funds));
+
+        double notInvested = calculateNotInvestedAmount(amount, investment);
+        investment.put(InvestmentFund.NOT_INVESTED, notInvested);
+
+        return investment;
     }
 
     private Map<InvestmentFundType, Double> createStrategyDetails(List<Pair<InvestmentFundType, Double>> list) {
@@ -25,27 +37,30 @@ abstract class InvestmentStrategy {
                         Pair::getSecond
                 ));
     }
-
-    private boolean isHundredPercent(List<Pair<InvestmentFundType, Double>> list) {
-        return Math.abs(1.0 - divisionSum(list)) < 0.00001;
-    }
-
-    private Double divisionSum(List<Pair<InvestmentFundType, Double>> list) {
-        return list.stream().
-                map(Pair::getSecond).
-                reduce(0.0, (sum, val) -> sum + val);
-    }
-
-    Map<InvestmentFundType, Double> getInfo() {
-        return Collections.unmodifiableMap(strategyDetails);
-    }
-
     private Double getInfo(InvestmentFundType type) {
         return strategyDetails.get(type);
     }
 
-    void invest(List<InvestmentFund> funds, double amount) {
-        Map<InvestmentFundType, Double> distribution = funds.stream().
+    private double calculateNotInvestedAmount(double amount, Map<InvestmentFund, Double> investment) {
+        return amount - investment.entrySet().stream().mapToDouble(Map.Entry::getValue).sum();
+    }
+
+    private Map<InvestmentFund, Double> distributeBetweenFunds(List<InvestmentFund> funds, Map<InvestmentFundType, Double> distribution, Map<InvestmentFundType, Long> fundTypes) {
+        return funds.stream().
+                map(f -> Pair.pair(f, Math.floor(distribution.get(f.getType()) / fundTypes.get(f.getType())))).
+                collect(Collectors.toMap(
+                        Pair::getFirst,
+                        Pair::getSecond
+                ));
+    }
+
+    private Map<InvestmentFundType, Long> countFundsByTypes(List<InvestmentFund> funds) {
+        return funds.stream().
+                collect(Collectors.groupingBy(InvestmentFund::getType, Collectors.counting()));
+    }
+
+    private Map<InvestmentFundType, Double> distributionByFundTypes(List<InvestmentFund> funds, double amount) {
+        return funds.stream().
                 map(InvestmentFund::getType).
                 distinct().
                 map(f -> Pair.pair(f, Math.floor(getInfo(f) * amount))).
@@ -53,23 +68,5 @@ abstract class InvestmentStrategy {
                         Pair::getFirst,
                         Pair::getSecond
                 ));
-
-
-
-        Map<InvestmentFundType, Long> fundTypes = funds.stream().
-                collect(Collectors.groupingBy(InvestmentFund::getType, Collectors.counting()));
-
-        Map<String, Double> investment = funds.stream().
-                map(f -> Pair.pair(f.getName(), Math.floor(distribution.get(f.getType()) / fundTypes.get(f.getType())))).
-                collect(Collectors.toMap(
-                        Pair::getFirst,
-                        Pair::getSecond
-                ));
-
-
-        double uninvestable = amount - investment.entrySet().stream().mapToDouble(Map.Entry::getValue).sum();
-
-        investment.forEach((k, v) -> System.out.println(k + ": " + v));
-        System.out.println("not invested: " + uninvestable);
     }
 }

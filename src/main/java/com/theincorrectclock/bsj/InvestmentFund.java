@@ -1,6 +1,8 @@
 package com.theincorrectclock.bsj;
 
-class InvestmentFund {
+public class InvestmentFund {
+
+    static final InvestmentFund NOT_INVESTED = new InvestmentFund("NIA", "Not Invested Amount", InvestmentFundType.NOT_INVESTED);
 
     private String id;
     private String name;
@@ -12,15 +14,15 @@ class InvestmentFund {
         this.type = type;
     }
 
-    String getId() {
+    public String getId() {
         return id;
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
-    InvestmentFundType getType() {
+    public InvestmentFundType getType() {
         return type;
     }
 }
