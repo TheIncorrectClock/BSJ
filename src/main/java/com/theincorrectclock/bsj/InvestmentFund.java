@@ -8,7 +8,7 @@ public class InvestmentFund {
     private String name;
     private InvestmentFundType type;
 
-    InvestmentFund(String id, String name, InvestmentFundType type) {
+    public InvestmentFund(String id, String name, InvestmentFundType type) {
         this.id = id;
         this.name = name;
         this.type = type;

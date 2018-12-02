@@ -25,9 +25,11 @@ abstract class InvestmentStrategy {
                         countFundsByTypes(funds));
 
         double notInvested = calculateNotInvestedAmount(amount, investment);
-        investment.put(InvestmentFund.NOT_INVESTED, notInvested);
+        if(notInvested > 0.0) {
+            investment.put(InvestmentFund.NOT_INVESTED, notInvested);
+        }
 
-        return investment;
+        return Collections.unmodifiableMap(investment);
     }
 
     private Map<InvestmentFundType, Double> createStrategyDetails(List<Pair<InvestmentFundType, Double>> list) {
