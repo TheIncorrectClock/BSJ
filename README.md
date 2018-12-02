@@ -1,6 +1,6 @@
 # BSJ
 
-##Info
+## Info
 **Time:** about 6 hours
 
 **Source:** Java 8\
@@ -9,7 +9,7 @@
 **Startup:**\
 ```mvn clean test```
 
-##Description
+## Description
 App allows to distribute given amount of money
 between three types of Investment Funds:
 * Domestic
@@ -21,7 +21,7 @@ Three types of investment strategies are supported:
 * Balanced (30% Domestic, 60% Foreign, 10% Financial)
 * Aggressive (40% Domestic, 20% Foreign, 40% Financial)
 
-##Detail
+## Detail
 Public API includes ```Invest``` class with one method: ```invest```.
 
 The ```invest``` method expects a list of investment funds (public ```InvestmendFund``` class), investment strategy (public ```InvestmentStrategyType``` enum) and amount to invest (```double```).
@@ -34,7 +34,7 @@ If caller gives negative amount then it will not be invested.
 
 If caller gives empty list of funds then the amount will not be invested.
 
-##Extending current solution
+## Extending current solution
 To add new investment strategy:
 1. Add new class which extends ```InvestmentStrategy```
 2. In its constructor define array of ```Pair``` where first element is ```InvestmentFundType``` and second element is percent of distribution
